@@ -2,13 +2,14 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: run-commandes
+  namespace: ci-pipeline
 spec:
   serviceAccountName: pipeline
   pipelineRef:
     name: pipeline-microservice
   params:
     - name: url
-      value: "https://github.com/Sabrynette/BACKEND-PROJECT.git"
+      value: "https://github.com/Sabrynette/BACKEND-FINAL.git"
     - name: contextDir
       value: "Commandes"
     - name: image

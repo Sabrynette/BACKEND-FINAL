@@ -4,15 +4,16 @@ metadata:
   name: run-service-utilisateur
   namespace: ci-pipeline
 spec:
+  serviceAccountName: pipeline
   pipelineRef:
     name: pipeline-microservice
   params:
     - name: url
-      value: https://github.com/Sabrynette/BACKEND-PROJECT.git
+      value: "https://github.com/Sabrynette/BACKEND-FINAL.git"
     - name: contextDir
-      value: service-utilisateur
+      value: "service-utilisateur"
     - name: image
-      value: image-registry.openshift-image-registry.svc:5000/ci-pipeline/service-utilisateur:latest
+      value: "image-registry.openshift-image-registry.svc:5000/ci-pipeline/service-utilisateur:latest"
   workspaces:
     - name: shared
       emptyDir: {}

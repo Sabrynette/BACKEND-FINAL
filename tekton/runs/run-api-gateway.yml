@@ -8,11 +8,11 @@ spec:
     name: pipeline-microservice
   params:
     - name: url
-      value: https://github.com/Sabrynette/BACKEND-PROJECT.git
+      value: "https://github.com/Sabrynette/BACKEND-FINAL.git"
     - name: contextDir
-      value: api-gateway
+      value: "api-gateway"
     - name: image
-      value: image-registry.openshift-image-registry.svc:5000/ci-pipeline/api-gateway:latest
+      value: "image-registry.openshift-image-registry.svc:5000/ci-pipeline/api-gateway:latest"
   workspaces:
     - name: shared
       emptyDir: {}

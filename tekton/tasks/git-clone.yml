@@ -9,21 +9,29 @@ spec:
     - name: revision
       type: string
       default: "master"
-
   workspaces:
     - name: output
-
   steps:
+    - name: clean
+      image: alpine
+      workingDir: /workspace/output
+      script: |
+        echo "🧹 Cleaning previous repo directory"
+        rm -rf repo
+        mkdir -p repo
+
     - name: clone
       image: alpine/git
-      env:
-        - name: GIT_ASKPASS
-          value: /tekton/home/.git-askpass
+      workingDir: /workspace/output
       script: |
-        set -e
-
-        cd $(workspaces.output.path)
-
+        echo "⬇️ Cloning repository"
         git clone $(params.url) repo
         cd repo
         git checkout $(params.revision)
+
+    - name: list
+      image: alpine
+      workingDir: /workspace/output/repo
+      script: |
+        echo "📁 Repository contents :"
+        ls -R .
