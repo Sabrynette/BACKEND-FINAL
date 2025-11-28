@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: Commandes
+          uri: lb://COMMANDES-SERVICE
+          predicates:
+            - Path=/commandes/**
+        - id: service-utilisateur
+          uri: lb://SERVICE-UTILISATEUR
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+                methods: GET,POST
+        - id: service-livraison
+          uri: lb://SERVICE-LIVRAISON
+          predicates:
+            - Path=/livraisons/**
+        - id: service-notification
+          uri: lb://SERVICE-NOTIFICATION
+          predicates:
+            - Path=/notifications/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+server:
+  port: 9090
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG

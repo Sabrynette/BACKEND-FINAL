@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-livraison
+  labels:
+    app: service-livraison
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-livraison
+  template:
+    metadata:
+      labels:
+        app: service-livraison
+    spec:
+      containers:
+        - name: service-livraison
+          image: your-registry/service-livraison:latest
+          ports:
+            - containerPort: 8083
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 10
+            periodSeconds: 10

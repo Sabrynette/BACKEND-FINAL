@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: run-api-gateway
+  namespace: ci-pipeline
+spec:
+  pipelineRef:
+    name: pipeline-microservice
+  params:
+    - name: url
+      value: https://github.com/Sabrynette/BACKEND-PROJECT.git
+    - name: contextDir
+      value: api-gateway
+    - name: image
+      value: image-registry.openshift-image-registry.svc:5000/ci-pipeline/api-gateway:latest
+  workspaces:
+    - name: shared
+      emptyDir: {}
+    - name: maven-repo
+      persistentVolumeClaim:
+        claimName: maven-repo-pvc
+    - name: maven-settings
+      configMap:
+        name: maven-settings

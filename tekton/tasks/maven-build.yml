@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: maven-build
+spec:
+  params:
+    - name: contextDir
+      type: string
+  workspaces:
+    - name: source
+    - name: maven-repo
+    - name: maven-settings
+
+  steps:
+    - name: mvn-build
+      image: maven:3.9.6-eclipse-temurin-17
+      workingDir: $(workspaces.source.path)/repo/$(params.contextDir)
+      script: |
+        echo "➡️ Working directory: $(workspaces.source.path)/repo/$(params.contextDir)"
+        ls -la $(workspaces.source.path)/repo/$(params.contextDir)
+
+        mvn -s $(workspaces.maven-settings.path)/settings.xml \
+            -Dmaven.repo.local=$(workspaces.maven-repo.path) \
+            clean package

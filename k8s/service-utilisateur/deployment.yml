@@ -1,0 +1,28 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-utilisateur
+  labels:
+    app: service-utilisateur
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-utilisateur
+  template:
+    metadata:
+      labels:
+        app: service-utilisateur
+    spec:
+      containers:
+        - name: service-utilisateur
+          image: your-registry/service-utilisateur:latest
+          ports:
+            - containerPort: 8082
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8082
+            initialDelaySeconds: 10
+            periodSeconds: 10

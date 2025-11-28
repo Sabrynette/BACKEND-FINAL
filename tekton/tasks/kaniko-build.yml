@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: kaniko-build
+spec:
+  params:
+    - name: image
+      type: string
+    - name: contextDir
+      type: string
+
+  workspaces:
+    - name: source
+
+  steps:
+    - name: build-image
+      image: gcr.io/kaniko-project/executor:v1.20.0
+      workingDir: $(workspaces.source.path)/repo/$(params.contextDir)
+      args:
+        - "--dockerfile=$(workspaces.source.path)/repo/$(params.contextDir)/Dockerfile"
+        - "--context=$(workspaces.source.path)/repo/$(params.contextDir)"
+        - "--destination=$(params.image)"
+        - "--insecure"
+        - "--skip-tls-verify"

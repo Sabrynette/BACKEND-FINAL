@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: maven-settings
+  namespace: ci-pipeline
+data:
+  settings.xml: |
+    <settings>
+        <mirrors>
+            <mirror>
+                <id>nexus</id>
+                <mirrorOf>*</mirrorOf>
+                <url>http://nexus-nexus.apps-crc.testing/repository/maven-public/</url>
+            </mirror>
+        </mirrors>
+    </settings>

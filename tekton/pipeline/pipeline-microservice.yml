@@ -1,0 +1,59 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: pipeline-microservice
+  namespace: ci-pipeline
+spec:
+  params:
+    - name: url
+      type: string
+    - name: contextDir
+      type: string
+    - name: image
+      type: string
+
+  workspaces:
+    - name: shared
+    - name: maven-repo
+    - name: maven-settings
+
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.url)
+      workspaces:
+        - name: output
+          workspace: shared
+
+    - name: build
+      taskRef:
+        name: maven-build
+      runAfter:
+        - clone
+      params:
+        - name: contextDir
+          value: $(params.contextDir)
+      workspaces:
+        - name: source
+          workspace: shared
+        - name: maven-repo
+          workspace: maven-repo
+        - name: maven-settings
+          workspace: maven-settings
+
+    - name: image
+      taskRef:
+        name: kaniko-build
+      runAfter:
+        - build
+      params:
+        - name: contextDir
+          value: $(params.contextDir)
+        - name: image
+          value: $(params.image)
+      workspaces:
+        - name: source
+          workspace: shared

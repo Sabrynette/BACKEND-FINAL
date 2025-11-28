@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: git-clone
+spec:
+  params:
+    - name: url
+      type: string
+    - name: revision
+      type: string
+      default: "master"
+
+  workspaces:
+    - name: output
+
+  steps:
+    - name: clone
+      image: alpine/git
+      env:
+        - name: GIT_ASKPASS
+          value: /tekton/home/.git-askpass
+      script: |
+        set -e
+
+        cd $(workspaces.output.path)
+
+        git clone $(params.url) repo
+        cd repo
+        git checkout $(params.revision)

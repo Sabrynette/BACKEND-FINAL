@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: service-notification
+  datasource:
+    url: jdbc:mysql://localhost:3306/notifications_db?useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/microservices-realm
+      client:
+        registration:
+          keycloak:
+            client-id: notification-service
+            client-secret: xEmwO0VNu51tsi6utEycbFppTsrA6qm8
+            authorization-grant-type: client_credentials
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/microservices-realm
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+server:
+  port: 8084
+logging:
+  level:
+    order_tracking.Users: INFO
+    org.springframework: WARN
+
+  kafka:
+    topic:
+      commandeCreated: commande-creee-topic
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer

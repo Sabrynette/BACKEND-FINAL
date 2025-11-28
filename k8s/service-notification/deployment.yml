@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-notification
+  labels:
+    app: service-notification
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-notification
+  template:
+    metadata:
+      labels:
+        app: service-notification
+    spec:
+      containers:
+        - name: service-notification
+          image: your-registry/service-notification:latest
+          ports:
+            - containerPort: 8084
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            initialDelaySeconds: 10
+            periodSeconds: 10

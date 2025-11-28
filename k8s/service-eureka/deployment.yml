@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-eureka
+  labels:
+    app: service-eureka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-eureka
+  template:
+    metadata:
+      labels:
+        app: service-eureka
+    spec:
+      containers:
+        - name: service-eureka
+          image: your-registry/service-eureka:latest
+          ports:
+            - containerPort: 8761
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8761
+            initialDelaySeconds: 10
+            periodSeconds: 10
