@@ -1,16 +1,19 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: pipeline-microservice
+  name: pipeline-service-commande
 spec:
   params:
     - name: url
       type: string
     - name: revision
       type: string
-      default: master
     - name: contextDir
+      type: string
     - name: image
+      type: string
+    - name: tag
+      type: string
 
   workspaces:
     - name: shared
@@ -18,6 +21,10 @@ spec:
     - name: maven-settings
 
   tasks:
+
+    # -----------------------------
+    # 1️⃣ CLONE GIT
+    # -----------------------------
     - name: clone
       taskRef:
         name: git-clone
@@ -30,10 +37,14 @@ spec:
         - name: shared
           workspace: shared
 
+    # -----------------------------
+    # 2️⃣ BUILD MAVEN
+    # -----------------------------
     - name: build
-      runAfter: [clone]
       taskRef:
         name: maven-build
+      runAfter:
+        - clone
       params:
         - name: contextDir
           value: $(params.contextDir)
@@ -45,15 +56,21 @@ spec:
         - name: maven-settings
           workspace: maven-settings
 
-    - name: image
-      runAfter: [build]
+    # -----------------------------
+    # 3️⃣ BUILD DOCKER IMAGE (KANIKO)
+    # -----------------------------
+    - name: docker
       taskRef:
         name: kaniko-build
+      runAfter:
+        - build
       params:
+        # 🔥 IMPORTANT : respecter EXACTEMENT le nom du dossier
         - name: contextDir
           value: $(params.contextDir)
+
         - name: image
-          value: $(params.image)
+          value: $(params.image):$(params.tag)
       workspaces:
         - name: shared
           workspace: shared

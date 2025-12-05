@@ -8,30 +8,23 @@ spec:
       type: string
     - name: revision
       type: string
-      default: "master"
-  workspaces:
-    - name: output
-  steps:
-    - name: clean
-      image: alpine
-      workingDir: /workspace/output
-      script: |
-        echo "🧹 Cleaning previous repo directory"
-        rm -rf repo
-        mkdir -p repo
+      default: master
 
+  workspaces:
+    - name: shared   # <--- le nom UNIQUE
+
+  steps:
     - name: clone
       image: alpine/git
-      workingDir: /workspace/output
       script: |
-        echo "⬇️ Cloning repository"
-        git clone $(params.url) repo
-        cd repo
+        echo "[CLONE] Cleaning..."
+        rm -rf /workspace/shared/repo
+
+        echo "[CLONE] Cloning..."
+        git clone $(params.url) /workspace/shared/repo
+
+        cd /workspace/shared/repo
         git checkout $(params.revision)
 
-    - name: list
-      image: alpine
-      workingDir: /workspace/output/repo
-      script: |
-        echo "📁 Repository contents :"
-        ls -R .
+        echo "[CLONE] Done. Listing:"
+        ls -R /workspace/shared/repo

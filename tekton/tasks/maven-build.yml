@@ -6,19 +6,33 @@ spec:
   params:
     - name: contextDir
       type: string
+
   workspaces:
-    - name: source
+    - name: shared
     - name: maven-repo
     - name: maven-settings
 
   steps:
-    - name: mvn-build
-      image: maven:3.9.6-eclipse-temurin-17
-      workingDir: $(workspaces.source.path)/repo/$(params.contextDir)
-      script: |
-        echo "➡️ Working directory: $(workspaces.source.path)/repo/$(params.contextDir)"
-        ls -la $(workspaces.source.path)/repo/$(params.contextDir)
+    - name: mvn
+      image: maven:3.9.0-eclipse-temurin-17
 
-        mvn -s $(workspaces.maven-settings.path)/settings.xml \
-            -Dmaven.repo.local=$(workspaces.maven-repo.path) \
+      # ✔ CORRECTION ICI : plus de /repo
+      workingDir: /workspace/shared/$(params.contextDir)
+
+      script: |
+        echo "[MAVEN] Current directory:"
+        pwd
+        ls -l
+
+        echo "[MAVEN] Running build..."
+        mvn -s /workspace/settings/settings.xml \
+            -Dmaven.repo.local=/workspace/maven-repo \
             clean package
+
+      volumeMounts:
+        - name: maven-settings
+          mountPath: /workspace/settings
+        - name: maven-repo
+          mountPath: /workspace/maven-repo
+        - name: shared
+          mountPath: /workspace/shared
