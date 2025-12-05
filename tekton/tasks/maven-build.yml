@@ -12,13 +12,19 @@ spec:
     - name: maven-repo
     - name: maven-settings
 
+  stepTemplate:
+    volumeMounts:
+      - name: maven-settings
+        mountPath: /workspace/settings
+      - name: maven-repo
+        mountPath: /workspace/maven-repo
+      - name: shared
+        mountPath: /workspace/shared
+
   steps:
     - name: mvn
       image: maven:3.9.0-eclipse-temurin-17
-
-      # ✔ CORRECTION ICI : plus de /repo
-      workingDir: /workspace/shared/$(params.contextDir)
-
+      workingDir: /workspace/shared/repo/$(params.contextDir)
       script: |
         echo "[MAVEN] Current directory:"
         pwd
@@ -28,11 +34,3 @@ spec:
         mvn -s /workspace/settings/settings.xml \
             -Dmaven.repo.local=/workspace/maven-repo \
             clean package
-
-      volumeMounts:
-        - name: maven-settings
-          mountPath: /workspace/settings
-        - name: maven-repo
-          mountPath: /workspace/maven-repo
-        - name: shared
-          mountPath: /workspace/shared
