@@ -2,17 +2,29 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: maven-build
+  namespace: ci-pipeline
 spec:
   params:
     - name: contextDir
       type: string
-      default: .
+
   workspaces:
     - name: shared
+    - name: maven-repo
+    - name: maven-settings
+
+  stepTemplate:
+    volumeMounts:
+      - name: maven-settings
+        mountPath: /workspace/settings
+      - name: maven-repo
+        mountPath: /workspace/maven-repo
+      - name: shared
+        mountPath: /workspace/shared
 
   steps:
     - name: mvn
-      image: maven:3.9.6-eclipse-temurin-17
-      workingDir: $(workspaces.shared.path)/repo/$(params.contextDir)
+      image: maven:3.9.0-eclipse-temurin-17
+      workingDir: /workspace/shared/repo/$(params.contextDir)
       script: |
-        mvn clean package -DskipTests
+        echo "[MAVEN] Current directory:"

@@ -4,6 +4,7 @@ metadata:
   name: run-api-gateway
   namespace: ci-pipeline
 spec:
+  serviceAccountName: pipeline
   pipelineRef:
     name: pipeline-microservice
   params:

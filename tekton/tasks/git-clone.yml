@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: git-clone
+  namespace: ci-pipeline
 spec:
   params:
     - name: url
@@ -11,19 +12,19 @@ spec:
       default: master
 
   workspaces:
-    - name: shared
+    - name: shared   # <--- le nom UNIQUE
 
   steps:
     - name: clone
       image: alpine/git
       script: |
         echo "[CLONE] Cleaning..."
-        rm -rf $(workspaces.shared.path)/repo
+        rm -rf /workspace/shared/repo
 
         echo "[CLONE] Cloning..."
-        git clone $(params.url) $(workspaces.shared.path)/repo
+        git clone $(params.url) /workspace/shared/repo
 
-        cd $(workspaces.shared.path)/repo
+        cd /workspace/shared/repo
         git checkout $(params.revision)
 
-        echo "[CLONE] Done."
+        echo "[CLONE] Done. Listing:"

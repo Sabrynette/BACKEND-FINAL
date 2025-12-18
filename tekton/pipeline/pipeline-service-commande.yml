@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: pipeline-service-commande
+  namespace: ci-pipeline
 spec:
   params:
     - name: url
