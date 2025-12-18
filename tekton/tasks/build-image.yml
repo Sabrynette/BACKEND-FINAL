@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build-image
+spec:
+  params:
+    - name: IMAGE
+    - name: DOCKERFILE
+      default: Dockerfile
+
+  workspaces:
+    - name: source
+
+  steps:
+    - name: build
+      image: quay.io/buildah/stable
+      securityContext:
+        privileged: true
+      script: |
+        echo "[BUILD] Building image..."
+        buildah bud -f $(params.DOCKERFILE) -t $(params.IMAGE) $(workspaces.source.path)/repo
+
+    - name: push
+      image: quay.io/buildah/stable
+      securityContext:
+        privileged: true
+      script: |
+        echo "[PUSH] Logging to OpenShift internal registry..."
+        buildah login -u kubeadmin -p $(cat /run/secrets/kubernetes.io/serviceaccount/token) \
+          image-registry.openshift-image-registry.svc:5000
+
+        echo "[PUSH] Pushing..."
+        buildah push $(params.IMAGE)

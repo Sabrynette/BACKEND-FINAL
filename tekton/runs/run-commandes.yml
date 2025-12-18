@@ -9,30 +9,17 @@ spec:
   params:
     - name: url
       value: https://github.com/Sabrynette/BACKEND-FINAL.git
-
     - name: revision
       value: master
-
     - name: contextDir
-      value: Commandes   # ← EXACTEMENT ce nom
-
+      value: Commandes
     - name: image
       value: image-registry.openshift-image-registry.svc:5000/ci-pipeline/service-commande
-
     - name: tag
       value: latest
 
-  taskRunTemplate:
-    serviceAccountName: pipeline
+  serviceAccountName: pipeline
 
   workspaces:
     - name: shared
       emptyDir: {}
-
-    - name: maven-repo
-      persistentVolumeClaim:
-        claimName: maven-repo-pvc
-
-    - name: maven-settings
-      configMap:
-        name: maven-settings

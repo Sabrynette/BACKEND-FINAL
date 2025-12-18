@@ -5,26 +5,16 @@ metadata:
 spec:
   params:
     - name: url
-      type: string
     - name: revision
-      type: string
     - name: contextDir
-      type: string
     - name: image
-      type: string
     - name: tag
-      type: string
 
   workspaces:
     - name: shared
-    - name: maven-repo
-    - name: maven-settings
 
   tasks:
 
-    # -----------------------------
-    # 1️⃣ CLONE GIT
-    # -----------------------------
     - name: clone
       taskRef:
         name: git-clone
@@ -37,40 +27,26 @@ spec:
         - name: shared
           workspace: shared
 
-    # -----------------------------
-    # 2️⃣ BUILD MAVEN
-    # -----------------------------
     - name: build
-      taskRef:
-        name: maven-build
       runAfter:
         - clone
+      taskRef:
+        name: maven-build
       params:
         - name: contextDir
           value: $(params.contextDir)
       workspaces:
         - name: shared
           workspace: shared
-        - name: maven-repo
-          workspace: maven-repo
-        - name: maven-settings
-          workspace: maven-settings
 
-    # -----------------------------
-    # 3️⃣ BUILD DOCKER IMAGE (KANIKO)
-    # -----------------------------
-    - name: docker
-      taskRef:
-        name: kaniko-build
+    - name: image
       runAfter:
         - build
+      taskRef:
+        name: build-image
       params:
-        # 🔥 IMPORTANT : respecter EXACTEMENT le nom du dossier
-        - name: contextDir
-          value: $(params.contextDir)
-
-        - name: image
+        - name: IMAGE
           value: $(params.image):$(params.tag)
       workspaces:
-        - name: shared
+        - name: source
           workspace: shared

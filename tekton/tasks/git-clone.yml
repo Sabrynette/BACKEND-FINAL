@@ -11,20 +11,19 @@ spec:
       default: master
 
   workspaces:
-    - name: shared   # <--- le nom UNIQUE
+    - name: shared
 
   steps:
     - name: clone
       image: alpine/git
       script: |
         echo "[CLONE] Cleaning..."
-        rm -rf /workspace/shared/repo
+        rm -rf $(workspaces.shared.path)/repo
 
         echo "[CLONE] Cloning..."
-        git clone $(params.url) /workspace/shared/repo
+        git clone $(params.url) $(workspaces.shared.path)/repo
 
-        cd /workspace/shared/repo
+        cd $(workspaces.shared.path)/repo
         git checkout $(params.revision)
 
-        echo "[CLONE] Done. Listing:"
-        ls -R /workspace/shared/repo
+        echo "[CLONE] Done."
