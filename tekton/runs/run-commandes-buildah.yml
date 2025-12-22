@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: run-commandes-buildah
+spec:
+  pipelineRef:
+    name: pipeline-microservice-buildah
+  params:
+    - name: GIT_URL
+      value: https://github.com/Sabrynette/BACKEND-FINAL.git
+    - name: GIT_REVISION
+      value: master
+    - name: CONTEXT_DIR
+      value: Commandes
+    - name: IMAGE
+      value: image-registry.openshift-image-registry.svc:5000/ci-pipeline/commandes:latest
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: tekton-shared-pvc
+    - name: maven-repo
+      persistentVolumeClaim:
+        claimName: maven-repo-pvc

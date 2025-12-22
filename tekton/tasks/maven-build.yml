@@ -2,29 +2,21 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: maven-build
-  namespace: ci-pipeline
 spec:
   params:
-    - name: contextDir
+    - name: CONTEXT_DIR
       type: string
-
+      default: "."
   workspaces:
-    - name: shared
+    - name: source
+      description: "Workspace contenant le code source cloné"
     - name: maven-repo
-    - name: maven-settings
-
-  stepTemplate:
-    volumeMounts:
-      - name: maven-settings
-        mountPath: /workspace/settings
-      - name: maven-repo
-        mountPath: /workspace/maven-repo
-      - name: shared
-        mountPath: /workspace/shared
-
+      description: "Cache Maven partagé entre les builds"
   steps:
-    - name: mvn
-      image: maven:3.9.0-eclipse-temurin-17
-      workingDir: /workspace/shared/repo/$(params.contextDir)
+    - name: build
+      image: maven:3.8.6-eclipse-temurin-17
+      workingDir: /workspace/source/$(params.CONTEXT_DIR)
       script: |
-        echo "[MAVEN] Current directory:"
+        #!/bin/sh
+        echo "📦 Construction du projet Maven dans $(pwd)..."
+        mvn -Dmaven.repo.local=/workspace/maven-repo clean package -DskipTests

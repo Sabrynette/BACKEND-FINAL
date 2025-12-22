@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: prepare-image
+spec:
+  params:
+    - name: CONTEXT_DIR
+      type: string
+      default: "."
+    - name: RUNTIME_IMAGE
+      type: string
+      default: registry.access.redhat.com/ubi9/openjdk-17-runtime
+  workspaces:
+    - name: source
+  steps:
+    - name: prepare
+      image: registry.access.redhat.com/ubi9/ubi-minimal
+      workingDir: $(workspaces.source.path)
+      script: |
+        set -eu
+        JAR="$(workspaces.source.path)/$(params.CONTEXT_DIR)/target/"*.jar
+        cp $JAR ./app.jar
+
+        cat > ./Dockerfile <<'EOF'
+        FROM ${RUNTIME_IMAGE}
+        COPY app.jar /deployments/app.jar
+        EXPOSE 8080
+        ENTRYPOINT ["java","-jar","/deployments/app.jar"]
+        EOF
+
+        sed -i "s|\${RUNTIME_IMAGE}|$(params.RUNTIME_IMAGE)|g" Dockerfile
