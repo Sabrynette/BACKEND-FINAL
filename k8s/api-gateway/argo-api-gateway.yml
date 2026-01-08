@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: api-gateway
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Sabrynette/BACKEND-FINAL.git'
+    targetRevision: master
+    path: k8s/api-gateway
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: cd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
