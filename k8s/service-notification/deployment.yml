@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-notification
+  namespace: cd
   labels:
     app: service-notification
 spec:
@@ -16,7 +17,8 @@ spec:
     spec:
       containers:
         - name: service-notification
-          image: your-registry/service-notification:latest
+          image: image-registry.openshift-image-registry.svc:5000/cd/service-notification:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8084
           readinessProbe:
