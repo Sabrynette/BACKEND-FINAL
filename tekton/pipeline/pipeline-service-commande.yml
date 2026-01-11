@@ -2,20 +2,28 @@ apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: pipeline-service-commande
-  namespace: ci-pipeline
+  namespace: ci
 spec:
   params:
     - name: url
+      type: string
     - name: revision
-    - name: contextDir
+      type: string
+      default: master
+    - name: CONTEXT_DIR
+      type: string
+      default: .
     - name: image
+      type: string
     - name: tag
+      type: string
+      default: latest
 
   workspaces:
     - name: shared
+    - name: maven-repo
 
   tasks:
-
     - name: clone
       taskRef:
         name: git-clone
@@ -34,11 +42,13 @@ spec:
       taskRef:
         name: maven-build
       params:
-        - name: contextDir
-          value: $(params.contextDir)
+        - name: CONTEXT_DIR
+          value: $(params.CONTEXT_DIR)
       workspaces:
-        - name: shared
+        - name: source
           workspace: shared
+        - name: maven-repo
+          workspace: maven-repo
 
     - name: image
       runAfter:
@@ -46,8 +56,11 @@ spec:
       taskRef:
         name: build-image
       params:
-        - name: IMAGE
-          value: $(params.image):$(params.tag)
+        - name: contextDir
+          value: $(params.CONTEXT_DIR)
+        - name: image
+          value: $(params.image)
       workspaces:
-        - name: source
+        - name: shared
           workspace: shared
+

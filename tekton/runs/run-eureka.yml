@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: run-eureka
-  namespace: ci-pipeline
+  namespace: ci
 spec:
   serviceAccountName: pipeline
   pipelineRef:

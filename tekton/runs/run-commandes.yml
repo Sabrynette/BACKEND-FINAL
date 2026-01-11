@@ -2,37 +2,35 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: run-service-commande
-  namespace: ci-pipeline
+  namespace: ci
 spec:
-  serviceAccountName: pipeline
+  taskRunTemplate:
+    serviceAccountName: pipeline
+
   pipelineRef:
     name: pipeline-service-commande
 
   params:
     - name: url
       value: https://github.com/Sabrynette/BACKEND-FINAL.git
-
     - name: revision
       value: master
-
-    - name: contextDir
-      value: Commandes   # ← EXACTEMENT ce nom
-
+    - name: CONTEXT_DIR
+      value: repo/Commandes
     - name: image
-      value: image-registry.openshift-image-registry.svc:5000/ci-pipeline/service-commande
-
+      value: image-registry.openshift-image-registry.svc:5000/ci/service-commande:latest
     - name: tag
       value: latest
 
-
   workspaces:
     - name: shared
-      emptyDir: {}
+      persistentVolumeClaim:
+        claimName: tekton-workspace-pvc
+      subPath: source
 
     - name: maven-repo
       persistentVolumeClaim:
-        claimName: maven-repo-pvc
+        claimName: tekton-workspace-pvc
+      subPath: maven-repo
 
-    - name: maven-settings
-      configMap:
-        name: maven-settings
+

@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: pipeline-microservice
-  namespace: ci-pipeline
+  namespace: ci
 spec:
   params:
     - name: url

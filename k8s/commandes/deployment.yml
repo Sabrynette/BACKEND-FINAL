@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: commandes
-          image: your-registry/commandes:latest
+          image: default-route-openshift-image-registry.apps-crc.testing/cd/commandes:latest
           ports:
             - containerPort: 8081
           readinessProbe:

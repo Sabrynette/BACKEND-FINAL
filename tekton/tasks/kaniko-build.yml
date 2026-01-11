@@ -1,8 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: kaniko-build
-  namespace: ci-pipeline
+  name: build-image
 spec:
   params:
     - name: contextDir
@@ -14,7 +13,15 @@ spec:
   steps:
     - name: build
       image: gcr.io/kaniko-project/executor:latest
+      env:
+        - name: HOME
+          value: /tekton/home
+        - name: DOCKER_CONFIG
+          value: /tekton/home/.docker
       args:
-        - --dockerfile=/workspace/shared/repo/$(params.contextDir)/Dockerfile
-        - --context=/workspace/shared/repo/$(params.contextDir)
+        - --dockerfile=/workspace/shared/$(params.contextDir)/Dockerfile
+        - --context=/workspace/shared/$(params.contextDir)
         - --destination=$(params.image)
+        - --skip-tls-verify
+        - --skip-tls-verify-pull
+
